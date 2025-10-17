@@ -1,11 +1,9 @@
 <?php
-// Mengambil data dari API Random User
 $api_url = 'https://randomuser.me/api/';
 $response = file_get_contents($api_url);
 $data = json_decode($response, true);
 $user = $data['results'][0];
 
-// Ekstrak data pengguna
 $nama = $user['name']['title'] . ' ' . $user['name']['first'] . ' ' . $user['name']['last'];
 $email = $user['email'];
 $telepon = $user['phone'];
