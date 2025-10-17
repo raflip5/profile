@@ -1,4 +1,5 @@
 <?php
+
 $api_url = 'https://randomuser.me/api/';
 $response = file_get_contents($api_url);
 $data = json_decode($response, true);
