@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Pengguna Random</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="notification" id="notification">✓ Tersalin ke clipboard!</div>
+    
+    <div class="profile-container" id="profileContainer">
+        <div class="loading">Memuat profil...</div>
+    </div>
+    
+    <script>
+        let userData = null;
+
+        async function loadUserProfile() {
+            try {
+                const response = await fetch('https://randomuser.me/api/');
+                const data = await response.json();
+                userData = data.results[0];
+                renderProfile();
+            } catch (error) {
+                document.getElementById('profileContainer').innerHTML = '<div class="loading">Gagal memuat profil. Silakan refresh halaman.</div>';
+            }
+        }
+
+        function renderProfile() {
+            const user = userData;
+            const nama = `${user.name.title} ${user.name.first} ${user.name.last}`;
+            const email = user.email;
+            const telepon = user.phone;
+            const cell = user.cell;
+            const foto = user.picture.large;
+            const gender = user.gender === 'male' ? 'Laki-laki' : 'Perempuan';
+            const tanggalLahir = new Date(user.dob.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const umur = user.dob.age;
+            const alamat = `${user.location.street.number} ${user.location.street.name}, ${user.location.city}, ${user.location.state}, ${user.location.country} - ${user.location.postcode}`;
+            const username = user.login.username;
+            const negara = user.location.country;
+            const kota = user.location.city;
+            const registered = new Date(user.registered.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            document.getElementById('profileContainer').innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-header-content">
+                        <div class="profile-photo-wrapper" onclick="showNotification('Foto profil diklik!')">
+                            <img src="${foto}" alt="Foto Profil" class="profile-photo">
+                            <div class="status-badge"></div>
+                        </div>
+                        
+                        <div class="profile-info-header">
+                            <h1 class="profile-name" onclick="copyToClipboard('${nama}')">${nama}</h1>
+                            <p class="profile-username">@${username}</p>
+                            
+                            <div class="profile-meta">
+                                <div class="meta-item" onclick="showNotification('Negara: ${negara}')">
+                                    <span class="meta-icon">🌍</span>
+                                    <span>${negara}</span>
+                                </div>
+                                <div class="meta-item" onclick="showNotification('Umur: ${umur} tahun')">
+                                    <span class="meta-icon">🎂</span>
+                                    <span>${umur} tahun</span>
+                                </div>
+                                <div class="meta-item" onclick="showNotification('Jenis Kelamin: ${gender}')">
+                                    <span class="meta-icon">👤</span>
+                                    <span>${gender}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab(event, 'contact')">📱 Kontak</button>
+                    <button class="tab" onclick="switchTab(event, 'about')">👤 Tentang</button>
+                    <button class="tab" onclick="switchTab(event, 'activity')">📊 Aktivitas</button>
+                </div>
+                
+                <div class="profile-body">
+                    <div id="contact" class="tab-content active">
+                        <div class="info-grid">
+                            <div class="info-card copyable" onclick="copyToClipboard('${email}')">
+                                <span class="copy-hint">Klik untuk salin</span>
+                                <div class="info-label">
+                                    <span class="info-icon">📧</span>
+                                    Email
+                                </div>
+                                <div class="info-value">${email}</div>
+                            </div>
+                            
+                            <div class="info-card copyable" onclick="copyToClipboard('${telepon}')">
+                                <span class="copy-hint">Klik untuk salin</span>
+                                <div class="info-label">
+                                    <span class="info-icon">📱</span>
+                                    Telepon
+                                </div>
+                                <div class="info-value">${telepon}</div>
+                            </div>
+                            
+                            <div class="info-card copyable" onclick="copyToClipboard('${cell}')">
+                                <span class="copy-hint">Klik untuk salin</span>
+                                <div class="info-label">
+                                    <span class="info-icon">📞</span>
+                                    Seluler
+                                </div>
+                                <div class="info-value">${cell}</div>
+                            </div>
+                            
+                            <div class="info-card copyable" onclick="copyToClipboard('${kota}')">
+                                <span class="copy-hint">Klik untuk salin</span>
+                                <div class="info-label">
+                                    <span class="info-icon">🏙️</span>
+                                    Kota
+                                </div>
+                                <div class="info-value">${kota}</div>
+                            </div>
+                            
+                            <div class="info-card address-card copyable" onclick="copyToClipboard('${alamat}')">
+                                <span class="copy-hint">Klik untuk salin</span>
+                                <div class="info-label">
+                                    <span class="info-icon">📍</span>
+                                    Alamat Lengkap
+                                </div>
+                                <div class="info-value">${alamat}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="about" class="tab-content">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">🎂 Tanggal Lahir</div>
+                                <div class="timeline-content">${tanggalLahir} (${umur} tahun)</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">👤 Jenis Kelamin</div>
+                                <div class="timeline-content">${gender}</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">🌍 Kewarganegaraan</div>
+                                <div class="timeline-content">${negara}</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">📝 Terdaftar Sejak</div>
+                                <div class="timeline-content">${registered}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="activity" class="tab-content">
+                        <div class="stats-grid">
+                            <div class="stat-card" onclick="showNotification('Total koneksi: 1,234')">
+                                <div class="stat-number">1.2K</div>
+                                <div class="stat-label">Koneksi</div>
+                            </div>
+                            <div class="stat-card" onclick="showNotification('Proyek selesai: 47')">
+                                <div class="stat-number">47</div>
+                                <div class="stat-label">Proyek</div>
+                            </div>
+                            <div class="stat-card" onclick="showNotification('Postingan dibuat: 892')">
+                                <div class="stat-number">892</div>
+                                <div class="stat-label">Postingan</div>
+                            </div>
+                            <div class="stat-card" onclick="showNotification('Rating: 4.8/5.0')">
+                                <div class="stat-number">4.8★</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="refresh-btn" onclick="loadUserProfile()">
+                            <span class="icon" style="font-size: 20px;">🔄</span>
+                            <span>Muat Profil Baru</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchTab(event, tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('✓ Tersalin: ' + text);
+            });
+        }
+        
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load profile on page load
+        loadUserProfile();
+    </script>
+</body>
+</html>
